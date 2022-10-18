@@ -4,15 +4,13 @@ import { Server } from "socket.io";
 import express from "express";
 
 const app = express();
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, "/frontend/build")));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/frontend/build/index.html"));
-});
 
 const httpServer = http.Server(app);
 
-const io = new Server(httpServer, { cors: { origin: "*" } });
+const io = new Server(httpServer, { cors: 
+  {
+    origin: "*"
+} });
 const users = [];
 const rooms = [];
 
@@ -106,7 +104,6 @@ io.on("connection", (socket) => {
         currentRoom: data.currentRoom,
       });
   });
-  console.log(getRoomUsers(roomId).length);
 
   socket.on("disconnect", () => {
     const left = `${CurrentUser.name} left the room`;
@@ -119,11 +116,9 @@ io.on("connection", (socket) => {
     if(getRoomUsers(roomId).length === 0){
       removeRoom(roomId);
     }
-    console.log(rooms)
     io.emit("rooms", rooms);
     io.sockets.in(roomId).emit("online", getRoomUsers(roomId));
   });
-  console.log(rooms);
   io.sockets.in(roomId).emit("online", getRoomUsers(roomId));
 });
 
